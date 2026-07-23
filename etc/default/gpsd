@@ -1,0 +1,4 @@
+DEVICES="/dev/ttyAMA0 /dev/pps0"
+GPSD_OPTIONS="-n"
+START_DAEMON="true"
+USBAUTO="true"

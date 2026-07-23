@@ -1,0 +1,12 @@
+[Unit]
+Description=PPS NTP Performance Optimization
+After=chronyd.service
+Requires=chronyd.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/pps-optimize.sh
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

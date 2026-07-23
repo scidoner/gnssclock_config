@@ -1,0 +1,47 @@
+Protocol 2
+StrictModes yes
+
+AuthenticationMethods publickey
+PubkeyAuthentication yes
+HostKey /etc/ssh/ssh_host_ed25519_key
+HostKeyAlgorithms ssh-ed25519-cert-v01@openssh.com,ssh-ed25519
+KexAlgorithms curve25519-sha256
+Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes256-ctr,aes256-cbc
+MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256,hmac-sha2-512
+HostbasedAcceptedKeyTypes ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,ssh-ed25519
+PubkeyAcceptedKeyTypes sk-ecdsa-sha2-nistp256@openssh.com,ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,sk-ssh-ed25519@openssh.com,ssh-ed25519
+CASignatureAlgorithms ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,ssh-ed25519
+
+PermitRootLogin no
+MaxAuthTries 5
+MaxSessions 10
+
+PasswordAuthentication no
+PermitEmptyPasswords no
+IgnoreRhosts yes
+HostbasedAuthentication no
+ChallengeResponseAuthentication no
+X11Forwarding no
+
+LogLevel VERBOSE
+SyslogFacility AUTH
+UseDNS no
+
+PermitTunnel no
+AllowTcpForwarding no
+AllowStreamLocalForwarding no
+GatewayPorts no
+AllowAgentForwarding no
+
+Banner /etc/issue.net
+PrintMotd no
+PrintLastLog yes
+
+ClientAliveInterval 900
+ClientAliveCountMax 0
+LoginGraceTime 30
+MaxStartups 5
+TCPKeepAlive yes
+
+AcceptEnv LANG LC_*
+Subsystem sftp /usr/lib/openssh/sftp-server -f AUTHPRIV -l INFO
