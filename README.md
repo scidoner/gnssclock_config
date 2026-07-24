@@ -206,6 +206,10 @@ sudo install -D -m 0755 usr/local/bin/pps-optimize.sh \
   /usr/local/bin/pps-optimize.sh
 sudo install -D -m 0644 etc/systemd/system/pps-optimize.service \
   /etc/systemd/system/pps-optimize.service
+sudo install -D -m 0755 usr/local/bin/time-burner.py \
+  /usr/local/bin/time-burner.py
+sudo install -D -m 0644 etc/systemd/system/time-burner.service \
+  /etc/systemd/system/time-burner.service  
 ```
 
 Validate the installed daemon configurations:
@@ -224,6 +228,7 @@ sudo systemctl daemon-reload
 sudo systemctl enable gpsd.service
 sudo systemctl enable chrony.service
 sudo systemctl enable pps-optimize.service
+sudo systemctl enable time-burner.service
 sudo systemctl reload ssh
 ```
 
@@ -278,24 +283,27 @@ The GNSS serial source is `noselect` because UART transport latency varies; it l
 > [!IMPORTANT]
 > After an hour, run the `analyze.py` tool on the chrony statistics log, to determine the offset for the GNSS reference.
 
-## 7. PPS optimization service
+## 7. PPS optimization service and time-burner service
 
-The included `pps-optimize.sh` and `pps-optimize.service` implement the optimization approach from the linked Austin's Nerdy Things thermal-management article:
+The included `pps-optimize.sh`, `pps-optimize.service`, `time-burner.py` and `time-burner.service` implement the optimization approach from the linked Austin's Nerdy Things thermal-management article:
 
 - set the CPU frequency governor to `performance`;
 - find the actual `pps_gpio` interrupt instead of assuming IRQ 200;
 - pin that PPS interrupt to CPU0;
 - give every returned `chronyd` PID `SCHED_FIFO` priority 50;
-- pin every returned `chronyd` PID to CPU0; and
-- set `ksoftirqd/0` to nice value `-10`.
+- pin every returned `chronyd` PID to CPU0;
+- set `ksoftirqd/0` to nice value `-10`; and
+- try to maintain a target CPU temperature of 54C but less than 80C.
 
-The unit runs after `chrony.service`.
+The PPS optimize unit runs after `chrony.service`.
 
 Verify it:
 
 ```bash
 systemctl --no-pager --full status pps-optimize.service
+systemctl --no-pager --full status time-burner.service
 journalctl -u pps-optimize.service -b --no-pager
+journalctl -u time-burner.service -b --no-pager
 cpupower frequency-info
 ps -eo pid,comm,psr,ni,rtprio | grep chronyd
 ```
@@ -306,6 +314,7 @@ If Chrony is manually restarted, reapply the process-specific settings:
 
 ```bash
 sudo systemctl restart pps-optimize.service
+sudo systemctl restart time-burner.service
 ```
 
 > [!WARNING]
