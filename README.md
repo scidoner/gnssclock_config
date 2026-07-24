@@ -18,7 +18,7 @@ The repository mirrors the Linux filesystem so each managed file has an obvious 
 | Item | Configuration |
 |---|---|
 | Board | Raspberry Pi 5 |
-| OS | Raspberry Pi OS Lite 64-bit, Bookworm or later |
+| OS | Raspberry Pi OS, Bookworm or later |
 | GPS serial device | `/dev/ttyAMA0` |
 | GPS serial pins | GPIO15/GPIO14, physical pins 10/8 |
 | GPSD time transport | NTP shared memory unit 0 |
@@ -50,7 +50,7 @@ Power the Pi off before wiring.
 
 ## 1. Record the OS image
 
-Install a specific Raspberry Pi OS Lite 64-bit image. In Raspberry Pi Imager, preconfigure:
+Install a specific Raspberry Pi OS image. In Raspberry Pi Imager, preconfigure:
 
 - a unique hostname, such as `rpi5-time01`;
 - an administrative user and SSH public key;
