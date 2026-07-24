@@ -5,7 +5,7 @@ After=network.target
 [Service]
 Type=simple
 User=root
-ExecStart=/usr/bin/python3 /usr/local/bin/time-burner.py -t 54.0 -n 3
+ExecStart=/usr/bin/python3 /usr/local/bin/time-burner.py
 Restart=always
 RestartSec=10
 
