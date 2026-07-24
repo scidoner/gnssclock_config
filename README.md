@@ -160,10 +160,9 @@ cd gnssclock_config
 Before installation:
 
 1. Change `allow 192.168.1.0/24` in `etc/chrony/chrony.conf` to the real client subnet.
-2. After an hour, run the `analyze.py` tool on the chrony statistics log, to determine the offset for the GNSS reference.
-3. Confirm the administrative user's public key is present in `~/.ssh/authorized_keys`.
-4. Keep the current SSH session open until a second public-key-only session has been tested.
-5. Review every managed file and commit local site changes to Git.
+2. Confirm the administrative user's public key is present in `~/.ssh/authorized_keys`.
+3. Keep the current SSH session open until a second public-key-only session has been tested.
+4. Review every managed file and commit local site changes to Git.
 
 The repository's `config.txt` enables UART0 directly. On Raspberry Pi 5 the default serial console is on the separate debug UART, but verify that `/proc/cmdline` does not assign a console to `ttyAMA0` before connecting GPS data.
 
@@ -275,6 +274,9 @@ refclock PPS /dev/pps0 refid pps lock gnss offset 0.0 poll 3 prefer trust
 GPSD reads only `/dev/ttyAMA0` and publishes serial time-of-day samples to `SHM 0`. Chrony opens `/dev/pps0` directly. `lock gnss` associates each precision pulse with the correct UTC second supplied by the `gnss` refclock.
 
 The GNSS serial source is `noselect` because UART transport latency varies; it labels PPS rather than steering the clock. If the receiver has unusually high serial latency and PPS samples fail the lock test, measure that receiver's GNSS offset and update the `offset` value instead of copying another module's calibration.
+
+> [!IMPORTANT]
+> After an hour, run the `analyze.py` tool on the chrony statistics log, to determine the offset for the GNSS reference.
 
 ## 7. PPS optimization service
 
