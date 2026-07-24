@@ -14,8 +14,21 @@ echo "Setting CPU governor to performance..."
 cpupower frequency-set -g performance
 
 # Pin PPS interrupt to CPU0 (may fail if already pinned, that's OK)
+pps_irq="$(
+    awk '
+        tolower($0) ~ /pps/ {
+            irq = $1
+            sub(/:$/, "", irq)
+            if (irq ~ /^[0-9]+$/) {
+                print irq
+                exit
+            }
+        }
+    ' /proc/interrupts
+)"
+
 echo "Configuring PPS interrupt affinity..."
-echo 1 > /proc/irq/170/smp_affinity 2>/dev/null || echo "PPS IRQ already configured"
+echo 1 > /proc/irq/$pps_irq/smp_affinity 2>/dev/null || echo "PPS IRQ already configured"
 
 # Wait for chronyd to start
 echo "Waiting for chronyd to start..."
@@ -56,7 +69,7 @@ echo "PPS NTP optimization complete!"
 # Log current status
 echo "=== Current Status ==="
 echo "CPU Governor: $(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor)"
-echo "PPS IRQ Affinity: $(cat /proc/irq/170/effective_affinity_list 2>/dev/null || echo 'not readable')"
+echo "PPS IRQ Affinity: $(cat /proc/irq/$pps_irq/effective_affinity_list 2>/dev/null || echo 'not readable')"
 if [ -n "$chronyd_pid" ]; then
     for pid in ${chronyd_pid}; do
         echo "chronyd Priority: $(chrt -p $pid)"

@@ -268,7 +268,7 @@ The repository installs these authoritative refclock lines:
 
 ```conf
 refclock SHM 0 refid gnss offset 0.0 precision 1e-3 poll 0 filter 3 noselect
-refclock PPS /dev/pps0 refid pps lock gnss offset 0.0 precision 1e-7 poll 3 prefer trust
+refclock PPS /dev/pps0 refid pps lock gnss offset 0.0 poll 3 prefer trust
 ```
 
 GPSD reads only `/dev/ttyAMA0` and publishes serial time-of-day samples to `SHM 0`. Chrony opens `/dev/pps0` directly. `lock gnss` associates each precision pulse with the correct UTC second supplied by the `gnss` refclock.
@@ -286,7 +286,7 @@ The included `pps-optimize.sh` and `pps-optimize.service` implement the optimiza
 - pin every returned `chronyd` PID to CPU0; and
 - set `ksoftirqd/0` to nice value `-10`.
 
-The unit runs after `chrony.service` and only when `/dev/pps0` exists.
+The unit runs after `chrony.service`.
 
 Verify it:
 
