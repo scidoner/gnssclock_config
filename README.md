@@ -293,7 +293,7 @@ The included `pps-optimize.sh`, `pps-optimize.service`, `time-burner.py` and `ti
 - give every returned `chronyd` PID `SCHED_FIFO` priority 50;
 - pin every returned `chronyd` PID to CPU0;
 - set `ksoftirqd/0` to nice value `-10`; and
-- try to maintain a target CPU temperature of 54C but less than 80C.
+- try to maintain a target CPU temperature of 70C but less than 80C.
 
 The PPS optimize unit runs after `chrony.service`.
 
