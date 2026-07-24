@@ -160,9 +160,10 @@ cd gnssclock_config
 Before installation:
 
 1. Change `allow 192.168.1.0/24` in `etc/chrony/chrony.conf` to the real client subnet.
-2. Confirm the administrative user's public key is present in `~/.ssh/authorized_keys`.
-3. Keep the current SSH session open until a second public-key-only session has been tested.
-4. Review every managed file and commit local site changes to Git.
+2. After an hour, run the `analyze.py` tool on the chrony statistics log, to determine the offset for the GNSS reference.
+3. Confirm the administrative user's public key is present in `~/.ssh/authorized_keys`.
+4. Keep the current SSH session open until a second public-key-only session has been tested.
+5. Review every managed file and commit local site changes to Git.
 
 The repository's `config.txt` enables UART0 directly. On Raspberry Pi 5 the default serial console is on the separate debug UART, but verify that `/proc/cmdline` does not assign a console to `ttyAMA0` before connecting GPS data.
 
