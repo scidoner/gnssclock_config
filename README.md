@@ -154,7 +154,7 @@ sudo systemctl enable --now unattended-upgrades
 Commands below assume this repository is checked out on the Pi and the shell is at its root:
 
 ```bash
-cd rpi5-gps-pps-clock
+cd gnssclock_config
 ```
 
 Before installation:

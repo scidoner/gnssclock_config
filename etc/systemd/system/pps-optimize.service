@@ -1,8 +1,7 @@
 [Unit]
-Description=PPS NTP performance optimization
-Requires=chrony.service
-After=chrony.service
-ConditionPathExists=/dev/pps0
+Description=PPS NTP Performance Optimization
+After=chronyd.service
+Requires=chronyd.service
 
 [Service]
 Type=oneshot

@@ -1,12 +1,20 @@
 # Raspberry Pi 5 headless GPS/PPS time server
-arm_64bit=1
-auto_initramfs=1
-disable_overscan=1
-dtparam=audio=off
+dtparam=audio=on
 camera_auto_detect=0
 display_auto_detect=0
+auto_initramfs=1
+dtoverlay=vc4-kms-v3d
+max_framebuffers=2
+disable_fw_kms_setup=1
+disable_overscan=1
+arm_boost=1
+
+[cm4]
+otg_mode=1
+
+[cm5]
+dtoverlay=dwc2,dr_mode=host
 
 [all]
-enable_uart=1
-dtoverlay=uart0-pi5
+dtparam=uart0=on
 dtoverlay=pps-gpio,gpiopin=4
