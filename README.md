@@ -13,44 +13,6 @@ The repository mirrors the Linux filesystem so each managed file has an obvious 
 > [!IMPORTANT]
 > This is an NTP server, not a PTP grandmaster. PPS can discipline the Pi locally with very low error, but ordinary NTP clients and networks will normally see larger offsets.
 
-## Repository layout
-
-```text
-.
-├── .gitattributes
-├── README.md
-├── boot/
-│   ├── README.md
-│   └── firmware/
-│       ├── README.md
-│       └── config.txt
-├── etc/
-│   ├── README.md
-│   ├── chrony/
-│   │   ├── README.md
-│   │   └── chrony.conf
-│   ├── default/
-│   │   ├── README.md
-│   │   └── gpsd
-│   ├── ssh/
-│   │   ├── README.md
-│   │   └── sshd_config
-│   └── systemd/
-│       ├── README.md
-│       └── system/
-│           ├── README.md
-│           └── pps-optimize.service
-└── usr/
-    ├── README.md
-    └── local/
-        ├── README.md
-        └── bin/
-            ├── README.md
-            └── pps-optimize.sh
-```
-
-The short READMEs inside mirrored directories are documentation only. Do not copy them into the Pi's system directories.
-
 ## Build assumptions
 
 | Item | Configuration |
