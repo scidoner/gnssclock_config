@@ -88,7 +88,7 @@ def worker_loop(worker_id, cmd_queue, done_queue):
 
 # Main control loop (simplified)
 def main():
-    target_temp = 70.0  # degrees Celsius
+    target_temp = 65.0  # degrees Celsius
     control_window = 0.20  # 200ms cycle time
 
     pid = PIDController(Kp=0.05, Ki=0.02, Kd=0.0,
