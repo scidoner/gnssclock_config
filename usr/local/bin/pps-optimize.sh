@@ -50,7 +50,7 @@ else
     echo "Setting chronyd to real-time priority and pinning to CPU 0..."
     for pid in ${chronyd_pid}; do
         chrt -f -p 50 $pid
-        taskset -p 1 $pid
+        taskset -pc 0 $pid
     done
 fi
 
