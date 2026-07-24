@@ -1,4 +1,5 @@
-DEVICES="/dev/ttyAMA0 /dev/pps0"
-GPSD_OPTIONS="-n"
+# Start GPSD immediately and read GNSS time-of-day from Raspberry Pi 5 UART0.
 START_DAEMON="true"
-USBAUTO="true"
+USBAUTO="false"
+DEVICES="/dev/ttyAMA0"
+GPSD_OPTIONS="-n"
