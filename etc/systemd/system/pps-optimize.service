@@ -2,6 +2,7 @@
 Description=PPS NTP Performance Optimization
 After=chronyd.service
 Requires=chronyd.service
+PartOf=chronyd.service
 
 [Service]
 Type=oneshot
