@@ -17,4 +17,5 @@ dtoverlay=dwc2,dr_mode=host
 
 [all]
 dtparam=uart0-pi5=on
+dtoverlay=uart0-pi5,ctsrts=on
 dtoverlay=pps-gpio,gpiopin=4
