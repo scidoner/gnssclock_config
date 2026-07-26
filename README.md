@@ -182,9 +182,10 @@ sudo systemctl reload ssh
 
 Open a second terminal and verify public-key SSH login now. Password login is disabled, root login is disabled, and SSH forwarding is disabled by the supplied `sshd_config`.
 
-Reboot to activate UART0 and the GPIO4 PPS overlay:
+Disable the login shell, serial output, and reboot to activate UART0 and the GPIO4 PPS overlay:
 
 ```bash
+sudo raspi-config nonint do_serial_cons 1
 sudo reboot
 ```
 
