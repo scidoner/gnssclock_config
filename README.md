@@ -5,8 +5,8 @@ This repository builds a dedicated Raspberry Pi 5 NTP server using:
 - GNSS time-of-day data from GPSD through `SHM 0`;
 - a kernel PPS device on GPIO4;
 - a boot-time PPS/Chrony optimization service; 
-- a boot-time thermal control service for frequency stability; and
-- chrony's direct PPS refclock, locked to the `gnss` SHM refclock;
+- a boot-time thermal control service for frequency stability;
+- chrony's direct PPS refclock, locked to the `gnss` SHM refclock; and
 - public-key-only SSH administration.
 
 The repository mirrors the Linux filesystem so each managed file has an obvious deployment destination.
