@@ -7,3 +7,7 @@ sudo install -D -m 0755 usr/local/bin/pps-optimize.sh /usr/local/bin/pps-optimiz
 sudo install -D -m 0644 etc/systemd/system/pps-optimize.service /etc/systemd/system/pps-optimize.service
 sudo install -D -m 0755 usr/local/bin/time-burner.py /usr/local/bin/time-burner.py
 sudo install -D -m 0644 etc/systemd/system/time-burner.service /etc/systemd/system/time-burner.service  
+sudo install -D -m 0755 etc/cron.hourly/hyperping.sh /etc/cron.hourly/hyperping.sh
+
+read -rp "Enter healthcheck webhook URL: " WEBHOOK_URL
+sudo sed -i "s|^WEBHOOK_URL=.*|WEBHOOK_URL=\"${WEBHOOK_URL}\"|" /etc/cron.hourly/hyperping.sh
