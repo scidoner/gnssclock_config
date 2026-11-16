@@ -1,5 +1,4 @@
-
-#!/usr/bin/env bash
+#!/bin/bash
 
 # Configuration
 WEBHOOK_URL="https://your-webhook-url-here"
