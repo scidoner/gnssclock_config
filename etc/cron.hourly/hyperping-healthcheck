@@ -1,56 +1,172 @@
+
 #!/bin/bash
 
+# ============================================================
 # Configuration
+# ============================================================
+
 WEBHOOK_URL="https://your-webhook-url-here"
 
-# Check that Chrony is running
-if ! systemctl is-active --quiet chronyd && \
-   ! systemctl is-active --quiet chrony; then
-    echo "ERROR: Chrony is not running"
+# Health check configuration
+HEALTH_RETRIES=3
+HEALTH_RETRY_DELAY=5
+
+# Webhook configuration
+WEBHOOK_RETRIES=3
+WEBHOOK_RETRY_DELAY=5
+WEBHOOK_TIMEOUT=10
+
+# GPS configuration
+GPS_TIMEOUT=5
+GPS_MESSAGES=10
+
+# ============================================================
+# Logging
+# ============================================================
+
+log() {
+    echo "$(date '+%Y-%m-%d %H:%M:%S') - $1"
+}
+
+# ============================================================
+# Chrony Check
+# ============================================================
+
+check_chrony() {
+
+    log "Checking Chrony..."
+
+    for ((i=1; i<=HEALTH_RETRIES; i++)); do
+
+        if ! systemctl is-active --quiet chronyd && \
+           ! systemctl is-active --quiet chrony; then
+
+            log "WARNING: Chrony is not running (attempt $i/$HEALTH_RETRIES)"
+
+        elif ! chronyc tracking 2>/dev/null | grep -q "Leap status.*Normal"; then
+
+            log "WARNING: Chrony is not synchronised (attempt $i/$HEALTH_RETRIES)"
+
+        else
+
+            log "OK: Chrony is running and synchronised"
+            return 0
+
+        fi
+
+        if (( i < HEALTH_RETRIES )); then
+            sleep "$HEALTH_RETRY_DELAY"
+        fi
+
+    done
+
+    log "ERROR: Chrony failed health checks after $HEALTH_RETRIES attempts"
+    return 1
+}
+
+# ============================================================
+# GPSD Check
+# ============================================================
+
+check_gps() {
+
+    log "Checking GPSD..."
+
+    for ((i=1; i<=HEALTH_RETRIES; i++)); do
+
+        if ! systemctl is-active --quiet gpsd; then
+
+            log "WARNING: GPSD is not running (attempt $i/$HEALTH_RETRIES)"
+
+        else
+
+            GPS_STATUS=$(timeout "$GPS_TIMEOUT" gpspipe -w -n "$GPS_MESSAGES" 2>/dev/null)
+
+            if echo "$GPS_STATUS" | grep -q '"mode":3'; then
+
+                log "OK: GPS has a 3D fix"
+                return 0
+
+            else
+
+                log "WARNING: GPS does not have a 3D fix (attempt $i/$HEALTH_RETRIES)"
+
+            fi
+
+        fi
+
+        if (( i < HEALTH_RETRIES )); then
+            sleep "$HEALTH_RETRY_DELAY"
+        fi
+
+    done
+
+    log "ERROR: GPS failed health checks after $HEALTH_RETRIES attempts"
+    return 1
+}
+
+# ============================================================
+# Webhook POST
+# ============================================================
+
+send_webhook() {
+
+    log "Sending webhook..."
+
+    for ((i=1; i<=WEBHOOK_RETRIES; i++)); do
+
+        HTTP_CODE=$(curl -sS -o /dev/null -w "%{http_code}" \
+            --max-time "$WEBHOOK_TIMEOUT" \
+            -X POST \
+            -H "Content-Type: application/json" \
+            -d '{
+                "status": "healthy",
+                "chrony": "synchronised",
+                "gps": "3d_fix"
+            }' \
+            "$WEBHOOK_URL" 2>/dev/null)
+
+        if [[ "$HTTP_CODE" =~ ^2[0-9][0-9]$ ]]; then
+
+            log "SUCCESS: Webhook sent (HTTP $HTTP_CODE)"
+            return 0
+
+        else
+
+            log "WARNING: Webhook failed (attempt $i/$WEBHOOK_RETRIES, HTTP ${HTTP_CODE:-no response})"
+
+        fi
+
+        if (( i < WEBHOOK_RETRIES )); then
+            log "Retrying webhook in $WEBHOOK_RETRY_DELAY seconds..."
+            sleep "$WEBHOOK_RETRY_DELAY"
+        fi
+
+    done
+
+    log "ERROR: Webhook failed after $WEBHOOK_RETRIES attempts"
+    return 1
+}
+
+# ============================================================
+# Main
+# ============================================================
+
+log "Starting Chrony/GPSD health checks"
+
+if ! check_chrony; then
     exit 1
 fi
 
-# Check that Chrony is synchronised
-if ! chronyc tracking | grep -q "Leap status.*Normal"; then
-    echo "ERROR: Chrony is not synchronised"
+if ! check_gps; then
     exit 1
 fi
 
-echo "OK: Chrony is running and synchronised"
+log "All health checks passed"
 
-# Check that GPSD is running
-if ! systemctl is-active --quiet gpsd; then
-    echo "ERROR: GPSD is not running"
+if ! send_webhook; then
     exit 1
 fi
 
-# Require GPS 3D fix (mode 3)
-GPS_STATUS=$(timeout 5 gpspipe -w -n 10 2>/dev/null)
-
-if ! echo "$GPS_STATUS" | grep -q '"mode":3'; then
-    echo "ERROR: GPS does not have a 3D fix"
-    exit 1
-fi
-
-echo "OK: GPS has a 3D fix"
-
-# Both conditions satisfied - send webhook
-echo "Chrony and GPS checks passed. Sending webhook..."
-
-HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" \
-    --max-time 10 \
-    -X POST \
-    -H "Content-Type: application/json" \
-    -d '{
-        "status": "healthy",
-        "chrony": "synchronised",
-        "gps": "3d_fix"
-    }' \
-    "$WEBHOOK_URL")
-
-if [[ "$HTTP_CODE" =~ ^2[0-9][0-9]$ ]]; then
-    echo "SUCCESS: Webhook sent (HTTP $HTTP_CODE)"
-else
-    echo "ERROR: Webhook failed (HTTP $HTTP_CODE)"
-    exit 1
-fi
+log "All checks completed successfully"
+exit 0
