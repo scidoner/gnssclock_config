@@ -10,4 +10,4 @@ sudo install -D -m 0644 etc/systemd/system/time-burner.service /etc/systemd/syst
 sudo install -D -m 0755 etc/cron.hourly/hyperping-healthcheck /etc/cron.hourly/hyperping-healthcheck
 
 read -rp "Enter healthcheck webhook URL: " WEBHOOK_URL
-sudo sed -i "s|^WEBHOOK_URL=.*|WEBHOOK_URL=\"${WEBHOOK_URL}\"|" /etc/cron.hourly/hyperping.sh
+sudo sed -i "s|^WEBHOOK_URL=.*|WEBHOOK_URL=\"${WEBHOOK_URL}\"|" /etc/cron.hourly/hyperping-healthcheck
